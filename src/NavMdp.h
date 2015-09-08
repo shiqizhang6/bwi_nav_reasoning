@@ -84,8 +84,8 @@ public:
 
     DomainParser dparser; 
 
-    NavMdp(std::string static_obs, std::string dynamic_obs, std::string sunny,
-        std::string facts, int, int); 
+    NavMdp(ros::NodeHandle *nh, std::string static_obs, std::string dynamic_obs, 
+        std::string sunny, std::string facts, int, int); 
 
     bool isTerminalState(const State &s) const; 
 

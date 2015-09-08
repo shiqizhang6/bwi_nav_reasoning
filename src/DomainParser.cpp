@@ -3,12 +3,13 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 
-DomainParser::DomainParser(const std::string static_obs, 
-    const std::string dynamic_obs, const std::string sunny_cells, 
-    const std::string plog_facts) {
+DomainParser::DomainParser(ros::NodeHandle *nh, const std::string static_obs, 
+        const std::string sunny_cells, const std::string plog_facts,
+        const std::string file_yaml, const std::string topic_walkers) {
+
+    nh_ = nh; 
 
     file_static_obstacle = static_obs; 
-    file_dynamic_obstacle = dynamic_obs; 
     file_sunny_cells = sunny_cells;
     file_plog_facts = plog_facts; 
 
@@ -16,14 +17,39 @@ DomainParser::DomainParser(const std::string static_obs,
     vec_dynamic_obstacles = std::vector<std::vector<int> >(0, std::vector<int>(0,0));
     vec_sunny_cells = std::vector<std::vector<int> >(0, std::vector<int>(0,0));
 
-    std::cout << "parsing model files: " << file_static_obstacle << std::endl;
-    parseFile(file_static_obstacle, vec_static_obstacles); 
-    std::cout << "parsing model files: " << file_dynamic_obstacle << std::endl;
-    parseFile(file_dynamic_obstacle, vec_dynamic_obstacles); 
-    std::cout << "parsing model files: " << file_sunny_cells << std::endl;
-    parseFile(file_sunny_cells, vec_sunny_cells); 
 
-    std::cout << "finished parsing model files" << std::endl;
+
+    parseFile(file_static_obstacle, vec_static_obstacles); 
+    std::cout << "finished parsing: " << file_static_obstacle << std::endl;
+
+    parseFile(file_sunny_cells, vec_sunny_cells); 
+    std::cout << "finished parsing: " << file_sunny_cells << std::endl;
+
+
+
+    coordinates_2d = std::vector<std::vector<std::vector<float> > > (
+        vec_static_obstacles.size(), std::vector<std::vector<float> > (
+            vec_static_obstacles[0].size(), std::vector<float>(2, 0))); 
+
+    ynode=YAML::LoadFile(ros::package::getPath("bwi_nav_reasoning") + "/maps/" + file_yaml); 
+
+    for (YAML::const_iterator row_pt = ynode["row_y"].begin();
+            row_pt != ynode["row_y"].end(); row_pt++) {
+
+        for (YAML::const_iterator col_pt = ynode["col_x"].begin();
+                col_pt != ynode["col_x"].end(); col_pt++) {
+            
+            coordinates_2d[row_pt->first.as<int>()][col_pt->first.as<int>()][0] 
+                = row_pt->second.as<float>();
+            coordinates_2d[row_pt->first.as<int>()][col_pt->first.as<int>()][1] 
+                = col_pt->second.as<float>();
+        }
+    }
+
+
+    updateDynamicObstacles(vec_static_obstacles, vec_dynamic_obstacles, ynode, 
+        topic_walkers); 
+    std::cout << "updated dynamic obstacles" << std::endl;
 
     row_num = vec_static_obstacles.size();
     col_num = vec_static_obstacles[0].size(); 
@@ -59,6 +85,42 @@ DomainParser::DomainParser(const std::string static_obs,
     std::cout << "writing to file: " << file_plog_facts << std::endl;
     writeToFile(file_plog_facts); 
     std::cout << "writing to file finished" << std::endl; 
+}
+
+void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArray::ConstPtr& msg) {
+    
+    ROS_INFO("I heard: [%s]", msg->data.c_str());
+
+    // initializing with a walker-free setting
+    for (int i=0; i<vec_dynamic_obstacles.size(); i++)
+        for (int j=0; j<vec_dynamic_obstacles[0].size(); j++)
+            vec_dynamic_obstacles[i][j] = 0; 
+
+    // TODO
+
+    float x, y; 
+    for (int i=0; i<NUM_OF_WALKERS; i++) {
+        x = msg->data[i].pose.position.x;
+        y = msg->data[i].pose.position.y;
+        for (int j=0; j<coordinates_2d.size(); j++) {
+            for (int k=0; k<coordinates_2d[0].size(); k++) {
+            
+            }
+        }
+    }
+
+}
+
+void DomainParser::updateDynamicObstacles(
+    const std::vector<std::vector<int> > vec_static_obstacles,
+    std::vector<std::vector<int> >& vec_dynamic_obstacles, 
+    YAML::Node ynode, const std::string topic_walkers) {
+ 
+    // dynamic vec has the same size as static vec
+    vec_dynamic_obstacles = vec_static_obstacles; 
+    
+    ros::Subscriber sub = nh->subscribe(topic_walkers, 1000, &DomainParser::callback, this);
+
 }
 
 void DomainParser::parseFile(const std::string filename,

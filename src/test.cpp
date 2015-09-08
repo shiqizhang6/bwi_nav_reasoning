@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
         
     std::cout << "creating nav model..." << std::endl; 
 
-    boost::shared_ptr<NavMdp> model(new NavMdp(path_static, path_dynamic, 
+    boost::shared_ptr<NavMdp> model(new NavMdp(nh, path_static, path_dynamic, 
         path_sunny, "tmp/rl_domain/facts.plog", term.row, term.col)); 
 
     std::cout << "creating vi estimator..." << std::endl; 
