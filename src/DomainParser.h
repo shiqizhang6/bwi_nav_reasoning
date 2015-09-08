@@ -9,6 +9,9 @@
 #include "StateAction.h"
 #include "bwi_msgs/AvailableRobotWithLocationArray.h"
 
+#define SIM_GRID_SIZE (2.5)
+#define NUM_OF_WALKERS (10)
+
 class DomainParser {
 
 public:

@@ -92,23 +92,37 @@ void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArra
     ROS_INFO("I heard: [%s]", msg->data.c_str());
 
     // initializing with a walker-free setting
-    for (int i=0; i<vec_dynamic_obstacles.size(); i++)
-        for (int j=0; j<vec_dynamic_obstacles[0].size(); j++)
+    for (int i=0; i<vec_dynamic_obstacles.size(); i++) {
+        for (int j=0; j<vec_dynamic_obstacles[0].size(); j++) {
             vec_dynamic_obstacles[i][j] = 0; 
-
-    // TODO
-
-    float x, y; 
-    for (int i=0; i<NUM_OF_WALKERS; i++) {
-        x = msg->data[i].pose.position.x;
-        y = msg->data[i].pose.position.y;
-        for (int j=0; j<coordinates_2d.size(); j++) {
-            for (int k=0; k<coordinates_2d[0].size(); k++) {
-            
-            }
         }
     }
 
+    float x, y; 
+    for (int i=0; i<NUM_OF_WALKERS; i++) {
+
+        x = msg->data[i].pose.position.x;
+        y = msg->data[i].pose.position.y;
+
+        int min_row = min_col = -1, min_dis = 100000; 
+        for (int j=0; j<coordinates_2d.size(); j++) {
+            for (int k=0; k<coordinates_2d[0].size(); k++) {
+                float curr_dis = ( (y - coordinates_2d[j][k][0])^2 + 
+                                   (x - coordinates_2d[j][k][1])^2 ) ^0.5; 
+                if (curr_dis < min_dis) {
+                    min_row = coordinates_2d[j][k][0];
+                    min_col = coordinates_2d[j][k][1]; 
+                    min_dis = curr_dis; 
+                }
+            }
+        }
+
+        if (min_row < 0 or min_col < 0) {
+            std::cerr << "error in locate walkers" << std::endl;
+        } else if (min_dis < SIM_GRID_SIZE) {
+            vec_dynamic_obstacles[min_row][min_col] = 1; 
+        }
+    }
 }
 
 void DomainParser::updateDynamicObstacles(
