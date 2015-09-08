@@ -38,8 +38,10 @@ std::ostream& operator<<(std::ostream& stream, const TransKey& key) {
 }
 
 bool operator<(const TransKey& l, const TransKey& r) {
+
     if (l.state.row < r.state.row) return true;
     else if (l.state.row > r.state.row) return false;
+
     if (l.state.col < r.state.col) return true;
     else if (l.state.col > r.state.col) return false; 
 
