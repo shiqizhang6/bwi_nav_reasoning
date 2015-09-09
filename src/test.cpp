@@ -20,27 +20,22 @@ int main(int argc, char **argv) {
 
     std::string path_static, path_dynamic, path_sunny, path_coord; 
     std::string param_static_name("path_static"), 
-                param_dynamic_name("path_dynamic"), 
                 param_sunny_name("path_sunny"), 
                 param_coord_name("path_coord"); 
 
     if (ros::param::has(param_static_name)) ros::param::get(param_static_name, path_static); 
-    if (ros::param::has(param_dynamic_name)) ros::param::get(param_dynamic_name, path_dynamic); 
     if (ros::param::has(param_sunny_name)) ros::param::get(param_sunny_name, path_sunny); 
     if (ros::param::has(param_coord_name)) ros::param::get(param_coord_name, path_coord); 
         
     std::cout << "creating nav model..." << std::endl; 
 
-    boost::shared_ptr<NavMdp> model(new NavMdp(nh, path_static, path_dynamic, 
-        path_sunny, "tmp/rl_domain/facts.plog", term.row, term.col)); 
+    boost::shared_ptr<NavMdp> model(new NavMdp(nh, path_static, 
+        path_sunny, "tmp/rl_domain/facts.plog", term.row, term.col, path_coord)); 
 
     std::cout << "creating vi estimator..." << std::endl; 
     boost::shared_ptr<VIEstimator<State, Action> > estimator(new VITabularEstimator<State, Action>); 
 
     ValueIteration<State, Action> vi(model, estimator);
-
-    std::cout << "Computing policy..." << std::endl;
-    vi.computePolicy(); 
 
     Driver *driver = new Driver(nh, path_coord); 
 
@@ -49,6 +44,12 @@ int main(int argc, char **argv) {
 
         ros::spinOnce(); 
         ros::Duration(1.0).sleep(); 
+
+        model->dparser.updateDynamicObstacles(); 
+
+        std::cout << "Computing policy..." << std::endl;
+        vi.computePolicy(); 
+
         driver->updateCurrentState(curr); 
 
         if (curr == term) 

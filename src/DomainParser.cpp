@@ -2,12 +2,15 @@
 #include <fstream>
 #include <iostream>
 #include <boost/lexical_cast.hpp>
+#include <yaml-cpp/yaml.h>
 
 DomainParser::DomainParser(ros::NodeHandle *nh, const std::string static_obs, 
         const std::string sunny_cells, const std::string plog_facts,
         const std::string file_yaml, const std::string topic_walkers) {
 
     nh_ = nh; 
+
+    topic_walkers_ = topic_walkers; 
 
     file_static_obstacle = static_obs; 
     file_sunny_cells = sunny_cells;
@@ -47,8 +50,7 @@ DomainParser::DomainParser(ros::NodeHandle *nh, const std::string static_obs,
     }
 
 
-    updateDynamicObstacles(vec_static_obstacles, vec_dynamic_obstacles, ynode, 
-        topic_walkers); 
+    updateDynamicObstacles(); 
     std::cout << "updated dynamic obstacles" << std::endl;
 
     row_num = vec_static_obstacles.size();
@@ -89,8 +91,6 @@ DomainParser::DomainParser(ros::NodeHandle *nh, const std::string static_obs,
 
 void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArray::ConstPtr& msg) {
     
-    ROS_INFO("I heard: [%s]", msg->data.c_str());
-
     // initializing with a walker-free setting
     for (int i=0; i<vec_dynamic_obstacles.size(); i++) {
         for (int j=0; j<vec_dynamic_obstacles[0].size(); j++) {
@@ -99,16 +99,16 @@ void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArra
     }
 
     float x, y; 
-    for (int i=0; i<NUM_OF_WALKERS; i++) {
+    for (int i=0; i<msg->robots.size(); i++) {
 
-        x = msg->data[i].pose.position.x;
-        y = msg->data[i].pose.position.y;
+        x = msg->robots[i].pose.position.x;
+        y = msg->robots[i].pose.position.y;
 
-        int min_row = min_col = -1, min_dis = 100000; 
+        int min_row = -1, min_col = -1, min_dis = 100000; 
         for (int j=0; j<coordinates_2d.size(); j++) {
             for (int k=0; k<coordinates_2d[0].size(); k++) {
-                float curr_dis = ( (y - coordinates_2d[j][k][0])^2 + 
-                                   (x - coordinates_2d[j][k][1])^2 ) ^0.5; 
+                float curr_dis = pow( pow(y - coordinates_2d[j][k][0], 2) + 
+                                      pow(x - coordinates_2d[j][k][1], 2), 0.5); 
                 if (curr_dis < min_dis) {
                     min_row = coordinates_2d[j][k][0];
                     min_col = coordinates_2d[j][k][1]; 
@@ -125,15 +125,12 @@ void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArra
     }
 }
 
-void DomainParser::updateDynamicObstacles(
-    const std::vector<std::vector<int> > vec_static_obstacles,
-    std::vector<std::vector<int> >& vec_dynamic_obstacles, 
-    YAML::Node ynode, const std::string topic_walkers) {
+void DomainParser::updateDynamicObstacles() {
  
     // dynamic vec has the same size as static vec
     vec_dynamic_obstacles = vec_static_obstacles; 
     
-    ros::Subscriber sub = nh->subscribe(topic_walkers, 1000, &DomainParser::callback, this);
+    ros::Subscriber sub = nh_->subscribe(topic_walkers_, 1000, &DomainParser::walkerCallback, this);
 
 }
 

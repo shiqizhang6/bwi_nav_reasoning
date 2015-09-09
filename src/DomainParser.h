@@ -2,12 +2,17 @@
 #ifndef DOMAINPARSER_HPP
 #define DOMAINPARSER_HPP
 
+#include <ros/ros.h>
+#include <ros/package.h>
 #include <string>
 #include <vector>
 #include <map>
 #include <yaml-cpp/yaml.h>
+#include <math.h>
 #include "StateAction.h"
 #include "bwi_msgs/AvailableRobotWithLocationArray.h"
+#include "bwi_msgs/AvailableRobotWithLocation.h"
+#include "bwi_msgs/AvailableRobot.h"
 
 #define SIM_GRID_SIZE (2.5)
 #define NUM_OF_WALKERS (10)
@@ -20,9 +25,11 @@ public:
 
     DomainParser(ros::NodeHandle *nh, const std::string static_obs, const
         std::string sunny_cells, const std::string plog_facts, 
-        const std::string file_yaml); 
+        const std::string file_yaml, std::string topic_walkers); 
 
-    ros::NodeHandle *nh_
+    ros::NodeHandle *nh_; 
+
+    std::string topic_walkers_; 
 
     std::string file_static_obstacle;
     std::string file_sunny_cells; 
@@ -45,8 +52,7 @@ public:
     void walkerCallback(const bwi_msgs::AvailableRobotWithLocationArray::ConstPtr &);
 
     void parseFile(const std::string file, std::vector<std::vector<int> >& vec); 
-    void updateDynamicObstacles(const std::vector<std::vector<int> > , 
-            std::vector<std::vector<int> >& , YAML::Node, const std::string); 
+    void updateDynamicObstacles(); 
     void writeToFile(const std::string file); 
 }; 
 

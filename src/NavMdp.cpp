@@ -3,13 +3,14 @@
 #define NAVMDP_CPP
 
 NavMdp::NavMdp (ros::NodeHandle *nh, std::string static_obs, 
-        std::string dynamic_obs, std::string sunny, std::string facts, 
-        int term_row, int term_col) {
+        std::string sunny, std::string facts, 
+        int term_row, int term_col, std::string path_coord) {
 
     terminal_row = term_row;
     terminal_col = term_col; 
     
     std::string path; 
+    path_coord_ = path_coord; 
     
     std::string zoidberg_plog("/home/shiqi/software/p-log/plog/install/plog");
     std::string sony_laptop_plog("/home/szhang/software/p-log/plog/src/plog");
@@ -36,8 +37,8 @@ NavMdp::NavMdp (ros::NodeHandle *nh, std::string static_obs,
     path = ros::package::getPath("bwi_nav_reasoning") + "/maps/"; 
 
     std::cout << "creating domain parser..." << std::endl; 
-    dparser = DomainParser(nh, path + static_obs, path + dynamic_obs, 
-        path + sunny, tmp_domain_dir + "facts.plog");
+    dparser = DomainParser(nh, path + static_obs, path + sunny, 
+        tmp_domain_dir + "facts.plog", path_coord_, "/random_persons_controller/status");
     std::cout << "creating domain parser finished" << std::endl; 
 
     // copy plog rules to temporary folder

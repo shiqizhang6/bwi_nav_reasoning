@@ -67,7 +67,6 @@ bool operator==(const TransKey& l, const TransKey& r) {
 class NavMdp : public PredictiveModel<State, Action> {
 public:
     std::string file_static_obstacle;
-    std::string file_dynamic_obstacle;
     std::string file_sunny_area;
     std::string file_plog_facts; 
 
@@ -84,8 +83,10 @@ public:
 
     DomainParser dparser; 
 
-    NavMdp(ros::NodeHandle *nh, std::string static_obs, std::string dynamic_obs, 
-        std::string sunny, std::string facts, int, int); 
+    std::string path_coord_; 
+
+    NavMdp(ros::NodeHandle *nh, std::string static_obs, std::string sunny, 
+        std::string facts, int, int, std::string path_coord); 
 
     bool isTerminalState(const State &s) const; 
 
