@@ -21,7 +21,6 @@ DomainParser::DomainParser(ros::NodeHandle *nh, const std::string static_obs,
     vec_sunny_cells = std::vector<std::vector<int> >(0, std::vector<int>(0,0));
 
 
-
     parseFile(file_static_obstacle, vec_static_obstacles); 
     std::cout << "finished parsing: " << file_static_obstacle << std::endl;
 
@@ -129,6 +128,10 @@ void DomainParser::updateDynamicObstacles() {
  
     // dynamic vec has the same size as static vec
     vec_dynamic_obstacles = vec_static_obstacles; 
+
+    for (int i=0; i<vec_dynamic_obstacles.size(); i++)
+        for (int j=0; j<vec_dynamic_obstacles[0].size(); j++)
+            vec_dynamic_obstacles[i][j] = 0; 
     
     ros::Subscriber sub = nh_->subscribe(topic_walkers_, 1000, &DomainParser::walkerCallback, this);
 

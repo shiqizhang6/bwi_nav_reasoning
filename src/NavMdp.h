@@ -107,6 +107,9 @@ public:
     std::string generateDescription(unsigned int indentation=0); 
 
     float getProbability(const State &s, const Action &a, const State &ns); 
+
+    void computeTransitionDynamics(); 
+
 }; 
 
 #endif

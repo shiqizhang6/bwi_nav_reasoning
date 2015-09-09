@@ -15,13 +15,11 @@ int main(int argc, char **argv) {
     ros::NodeHandle *nh = new ros::NodeHandle(); 
 
     State term, curr, next; 
-    term.row = 4;
-    term.col = 1;
+    term.row = 0;
+    term.col = 0;
 
     std::string path_static, path_dynamic, path_sunny, path_coord; 
-    std::string param_static_name("path_static"), 
-                param_sunny_name("path_sunny"), 
-                param_coord_name("path_coord"); 
+    std::string param_static_name("path_static"), param_sunny_name("path_sunny"), param_coord_name("path_coord"); 
 
     if (ros::param::has(param_static_name)) ros::param::get(param_static_name, path_static); 
     if (ros::param::has(param_sunny_name)) ros::param::get(param_sunny_name, path_sunny); 
@@ -30,12 +28,11 @@ int main(int argc, char **argv) {
     std::cout << "creating nav model..." << std::endl; 
 
     boost::shared_ptr<NavMdp> model(new NavMdp(nh, path_static, 
-        path_sunny, "tmp/rl_domain/facts.plog", term.row, term.col, path_coord)); 
+                                               path_sunny, "tmp/rl_domain/facts.plog", 
+                                               term.row, term.col, path_coord)); 
 
     std::cout << "creating vi estimator..." << std::endl; 
     boost::shared_ptr<VIEstimator<State, Action> > estimator(new VITabularEstimator<State, Action>); 
-
-    ValueIteration<State, Action> vi(model, estimator);
 
     Driver *driver = new Driver(nh, path_coord); 
 
@@ -46,29 +43,29 @@ int main(int argc, char **argv) {
         ros::Duration(1.0).sleep(); 
 
         model->dparser.updateDynamicObstacles(); 
-
-        std::cout << "Computing policy..." << std::endl;
-        vi.computePolicy(); 
+        model->computeTransitionDynamics(); 
 
         driver->updateCurrentState(curr); 
+        if (curr == term) break; 
 
-        if (curr == term) 
-            break; 
-        else 
-            action = vi.getBestAction(curr); 
- 
-        next = curr;        
+        std::cout << "Computing policy..." << std::endl;
+        ValueIteration<State, Action> vi(model, estimator);
+        vi.computePolicy(); 
+
+        action = vi.getBestAction(curr); 
+        next = curr;
+
         if (action == UP) next.row -= 1;
         else if (action == DOWN) next.row += 1;
         else if (action == LEFT) next.col -= 1;
         else if (action == RIGHT) next.col += 1; 
         else ROS_ERROR("action not recognized"); 
 
-        std::cout << "current: " << curr << " next: " << next 
-                  << " action: " << action << std::endl; 
+        std::cout << "curr: " << curr << " next: " << next << " action: " << action << std::endl; 
 
         driver->moveToGoalState(next); 
     }
+
     ROS_INFO("task done!"); 
     return 0; 
 }

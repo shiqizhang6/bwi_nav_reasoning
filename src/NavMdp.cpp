@@ -45,30 +45,35 @@ NavMdp::NavMdp (ros::NodeHandle *nh, std::string static_obs,
     path = ros::package::getPath("bwi_nav_reasoning") + "/domain/"; 
     boost::filesystem::copy_file(path + "rules.plog", tmp_domain_dir + "rules.plog"); 
 
+}
+
+void NavMdp::computeTransitionDynamics() {
+
     std::vector<State> all_states, tmp_next_states; 
     std::vector<float> tmp_rewards, tmp_probs; 
     getStateVector(all_states); 
     std::vector<Action> all_actions; 
     getActionsAtState(all_states[0], all_actions);  
-
+    
     std::cout << "computing transition dynamics..." << std::endl; 
     int cnt = 0; 
+    
     for (int i=0; i<all_states.size(); i++) {
-
+    
         if (i*1.0/all_states.size() >= cnt*1.0/100.0) {
             while (i*1.0/all_states.size() > (++cnt)*1.0/100.0) {}
             std::cout << "\rfinished: " << cnt << "\%" << std::endl;
         }
-
+    
         std::cout << all_states[i] << std::endl; 
-
+    
         for (int j=0; j<all_actions.size(); j++) {
             TransKey k; 
             TransValue v; 
-
+    
             k.state = all_states[i]; 
             k.action = all_actions[j];
-
+    
             tmp_next_states.clear();
             tmp_rewards.clear();
             tmp_probs.clear();
@@ -78,7 +83,7 @@ NavMdp::NavMdp (ros::NodeHandle *nh, std::string static_obs,
             v.rewards = tmp_rewards;
             v.probs = tmp_probs;
             trans_map[k] = v;
-
+    
             std::cout << "\t" << all_actions[j] << std::endl;
             for (int ii = 0; ii < tmp_next_states.size(); ii++) {
                 std::cout << "\t\tns: " << v.ns[ii] << " reward: " << v.rewards[ii] << " prob: " << v.probs[ii] << std::endl; 
@@ -86,8 +91,6 @@ NavMdp::NavMdp (ros::NodeHandle *nh, std::string static_obs,
             
         }
     }
-
-    std::cout << "finished nav model initialization" << std::endl; 
 }
 
 void NavMdp::getActionsAtState(const State &s, std::vector<Action> &actions) {
