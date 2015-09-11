@@ -14,6 +14,16 @@ valid(S1,S2) :- terminal(S2).
 sunny(S)=false :- not sunny(S). 
 human(S)=false :- not human(S). 
 
+% haswayleft(S2) :- leftof(S1,S2). 
+% haswayright(S1) :- leftof(S1,S2). 
+% haswayup(S1) :- belowof(S1,S2). 
+% haswaydown(S2) :- belowof(S1,S2). 
+% invalid :- action=up, not haswayup(S), curr_s=S. 
+% invalid :- action=left, not haswayleft(S), curr_s=S. 
+% invalid :- action=right, not haswayright(S), curr_s=S. 
+% invalid :- action=down, not haswaydown(S), curr_s=S. 
+% invalid=false :- not invalid. 
+
 curr_a: action. 
 [rca] random(curr_a). 
 
@@ -22,10 +32,19 @@ curr_s:state.
 
 next_s:state. 
 [rnl] random(next_s:{S_: valid(S,S_)}) :- curr_s=S. 
-[rnl] pr(next_s=S1 | sunny(S2)=false, human(S1)=false, curr_a=up,    curr_s=S2, belowof(S2,S1)) = 8/10. 
-[rnl] pr(next_s=S1 | sunny(S2)=false, human(S1)=false, curr_a=down,  curr_s=S2, belowof(S1,S2)) = 8/10. 
-[rnl] pr(next_s=S1 | sunny(S2)=false, human(S1)=false, curr_a=left,  curr_s=S2, leftof(S1,S2)) = 8/10. 
-[rnl] pr(next_s=S1 | sunny(S2)=false, human(S1)=false, curr_a=right, curr_s=S2, leftof(S2,S1)) = 8/10. 
+[rnl] pr(next_s=S1 | curr_a=up,     curr_s=S2, leftof(S1,S2)) = 0/10. 
+[rnl] pr(next_s=S1 | curr_a=up,     curr_s=S2, leftof(S2,S1)) = 0/10. 
+[rnl] pr(next_s=S1 | curr_a=down,     curr_s=S2, leftof(S1,S2)) = 0/10. 
+[rnl] pr(next_s=S1 | curr_a=down,     curr_s=S2, leftof(S2,S1)) = 0/10. 
+[rnl] pr(next_s=S1 | curr_a=left,     curr_s=S2, belowof(S1,S2)) = 0/10. 
+[rnl] pr(next_s=S1 | curr_a=left,     curr_s=S2, belowof(S2,S1)) = 0/10. 
+[rnl] pr(next_s=S1 | curr_a=right,     curr_s=S2, belowof(S1,S2)) = 0/10. 
+[rnl] pr(next_s=S1 | curr_a=right,     curr_s=S2, belowof(S2,S1)) = 0/10. 
+
+[rnl] pr(next_s=S1 | sunny(S2)=false, human(S1)=false, curr_a=up,    curr_s=S2, belowof(S2,S1)) = 9/10. 
+[rnl] pr(next_s=S1 | sunny(S2)=false, human(S1)=false, curr_a=down,  curr_s=S2, belowof(S1,S2)) = 9/10. 
+[rnl] pr(next_s=S1 | sunny(S2)=false, human(S1)=false, curr_a=left,  curr_s=S2, leftof(S1,S2)) = 9/10. 
+[rnl] pr(next_s=S1 | sunny(S2)=false, human(S1)=false, curr_a=right, curr_s=S2, leftof(S2,S1)) = 9/10. 
 
 [rnl] pr(next_s=S2 | sunny(S2)=false, human(S1), curr_a=up,    curr_s=S2, belowof(S2,S1)) = 8/10. 
 [rnl] pr(next_s=S2 | sunny(S2)=false, human(S1), curr_a=down,  curr_s=S2, belowof(S1,S2)) = 8/10. 

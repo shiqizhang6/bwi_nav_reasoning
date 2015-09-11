@@ -4,7 +4,7 @@
 
 #define MAX_FLOAT (10000.0)
 #define MAX_INDEX (1000)
-#define GRID_WIDTH (1.0)
+#define GRID_WIDTH (15.0)
 
 Driver::Driver(ros::NodeHandle *node_handle, std::string file_yaml) {
 
@@ -46,7 +46,7 @@ void Driver::callbackUpdatePosition(const geometry_msgs::PoseWithCovarianceStamp
             //     << " col_pt: " << col_pt->second.as<float>() << std::endl; 
             // std::cout << "dis: " << dis << std::endl; 
 
-            if (dis < GRID_WIDTH) {
+            if (dis < min_distance) {
                 min_row = row_pt->first.as<int>();
                 min_col = col_pt->first.as<int>(); 
                 min_distance = dis; 
@@ -93,7 +93,7 @@ bool Driver::moveToGoalState(const State &state) {
 
         // 0.8: to force robot to move toward the center of grid cells, after
         // the body get into the corresponding grid cells
-        has_arrived = dis < 0.8 * GRID_WIDTH / 2.0; 
+        has_arrived = dis < 0.5; 
 
         pub_simple_goal.publish(msg_goal); 
         ros::Duration(1.0).sleep(); 

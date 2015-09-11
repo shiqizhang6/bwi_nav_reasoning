@@ -1,12 +1,10 @@
 <launch>
 
-    <arg name="static" default="simulation/map_static.txt" />
-    <arg name="dynamic" default="simulation/map_dynamic.txt" />
-    <arg name="sunny" default="simulation/map_sunny.txt" />
-    <arg name="coord" default="simulation/coordinates_sim.yaml" />
+    <arg name="static" default="simulation/corridors/map_static.txt" />
+    <arg name="sunny" default="simulation/corridors/map_sunny.txt" />
+    <arg name="coord" default="simulation/corridors/coordinates_sim.yaml" />
 
     <param name="path_static" value="$(arg static)" />
-    <param name="path_dynamic" value="$(arg dynamic)" />
     <param name="path_sunny" value="$(arg sunny)" />
     <param name="path_coord" value="$(arg coord)" />
 

@@ -12,6 +12,9 @@ DomainParser::DomainParser(ros::NodeHandle *nh, const std::string static_obs,
 
     topic_walkers_ = topic_walkers; 
 
+    ros::Subscriber sub = nh_->subscribe(topic_walkers_, 1, &DomainParser::walkerCallback, this);
+    ros::Duration(2.0).sleep();
+
     file_static_obstacle = static_obs; 
     file_sunny_cells = sunny_cells;
     file_plog_facts = plog_facts; 
@@ -23,6 +26,7 @@ DomainParser::DomainParser(ros::NodeHandle *nh, const std::string static_obs,
 
     parseFile(file_static_obstacle, vec_static_obstacles); 
     std::cout << "finished parsing: " << file_static_obstacle << std::endl;
+    vec_dynamic_obstacles = vec_static_obstacles; 
 
     parseFile(file_sunny_cells, vec_sunny_cells); 
     std::cout << "finished parsing: " << file_sunny_cells << std::endl;
@@ -98,6 +102,7 @@ void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArra
     }
 
     float x, y; 
+    std::cout << "there is/are " << msg->robots.size() << " walkers" << std::endl; 
     for (int i=0; i<msg->robots.size(); i++) {
 
         x = msg->robots[i].pose.position.x;
@@ -109,8 +114,8 @@ void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArra
                 float curr_dis = pow( pow(y - coordinates_2d[j][k][0], 2) + 
                                       pow(x - coordinates_2d[j][k][1], 2), 0.5); 
                 if (curr_dis < min_dis) {
-                    min_row = coordinates_2d[j][k][0];
-                    min_col = coordinates_2d[j][k][1]; 
+                    min_row = j; 
+                    min_col = k; 
                     min_dis = curr_dis; 
                 }
             }
@@ -118,10 +123,12 @@ void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArra
 
         if (min_row < 0 or min_col < 0) {
             std::cerr << "error in locate walkers" << std::endl;
-        } else if (min_dis < SIM_GRID_SIZE) {
+        } else {
             vec_dynamic_obstacles[min_row][min_col] = 1; 
+            std::cout << "walker row: " << min_row << " col: " << min_col << std::endl; 
         }
     }
+    std::cout << "DomainParser::walkerCallback done" << std::endl;
 }
 
 void DomainParser::updateDynamicObstacles() {
@@ -133,8 +140,7 @@ void DomainParser::updateDynamicObstacles() {
         for (int j=0; j<vec_dynamic_obstacles[0].size(); j++)
             vec_dynamic_obstacles[i][j] = 0; 
     
-    ros::Subscriber sub = nh_->subscribe(topic_walkers_, 1000, &DomainParser::walkerCallback, this);
-
+    ros::spinOnce(); 
 }
 
 void DomainParser::parseFile(const std::string filename,
