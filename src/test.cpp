@@ -49,49 +49,52 @@ int main(int argc, char **argv) {
 
         if (ros::ok() == false) break;
     
-        int rnum = rand() % 4; 
-        if (rnum == 0) {
-            term.row = 0; term.col = 3;
-        } else if (rnum == 1) {
-            term.row = 2; term.col = 0;
-        } else if (rnum == 2) {
-            term.row = 4; term.col = 2;
-        } else {
-            term.row = 4; term.col = 4;
-        }
+        term.row = 3; term.col = 5;
 
-        logfile.open("/home/shiqi/Dropbox/Shared_space/20150911_shiqi/log.txt", std::ios::app); 
-        logfile << ros::Time::now().toSec() << " " << term.row << " " << term.col << "\n"; 
-        logfile.close(); 
+        // int rnum = rand() % 4; 
+        // if (rnum == 0) {
+        //     term.row = 0; term.col = 3;
+        // } else if (rnum == 1) {
+        //     term.row = 2; term.col = 0;
+        // } else if (rnum == 2) {
+        //     term.row = 4; term.col = 2;
+        // } else {
+        //     term.row = 4; term.col = 4;
+        // }
+
+        // logfile.open("/home/shiqi/Dropbox/Shared_space/20150911_shiqi/log.txt", std::ios::app); 
+        // logfile << ros::Time::now().toSec() << " " << term.row << " " << term.col << "\n"; 
+        // logfile.close(); 
 
         std::cout << "creating nav model..." << std::endl; 
         boost::shared_ptr<NavMdp> model(new NavMdp(nh, path_static, 
                                                    path_sunny, "tmp/rl_domain/facts.plog", 
                                                    term.row, term.col, path_coord)); 
 
-        std::ostringstream policy_name;
-        // policy_name << "/home/shiqi/Desktop/baseline_policy/" << rnum; 
-        policy_name << "/home/shiqi/Dropbox/Shared_space/20150911_shiqi/"; 
-        policy_name << rnum << model->dparser.walker_row << model->dparser.walker_col; 
+        // std::ostringstream policy_name;
+        // // policy_name << "/home/shiqi/Desktop/baseline_policy/" << rnum; 
+        // policy_name << "/home/shiqi/Dropbox/Shared_space/20150911_shiqi/"; 
+        // policy_name << rnum << model->dparser.walker_row << model->dparser.walker_col; 
 
 
-        std::ifstream infile(policy_name.str().c_str()); 
+        // std::ifstream infile(policy_name.str().c_str()); 
 
-        model->dparser.updateDynamicObstacles(); 
-        if (infile.good() == false) {
-            model->computeTransitionDynamics(); 
-        }
+        // model->dparser.updateDynamicObstacles(); 
+        // if (infile.good() == false) {
+        //     model->computeTransitionDynamics(); 
+        // }
+        model->computeTransitionDynamics(); 
 
         ValueIteration<State, Action> vi(model, estimator);
 
-        if (infile.good()) {
-            std::cout << "Loading policy: " << policy_name.str() << std::endl;
-            vi.loadPolicy(policy_name.str()); 
-        } else {
-            std::cout << "Computing policy..." << std::endl;
-            vi.computePolicy(); 
-            vi.savePolicy(policy_name.str()); 
-        }
+        // if (infile.good()) {
+        //     std::cout << "Loading policy: " << policy_name.str() << std::endl;
+        //     vi.loadPolicy(policy_name.str()); 
+        // } else {
+        //     std::cout << "Computing policy..." << std::endl;
+        //     vi.computePolicy(); 
+        //     vi.savePolicy(policy_name.str()); 
+        // }
 
         Action action; 
         while (ros::ok()) {
