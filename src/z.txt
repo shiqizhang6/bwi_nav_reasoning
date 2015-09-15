@@ -1,0 +1,4 @@
+two changes are needed for baseline vs icorpp:
+
+test.cpp: line 73/74
+NavMdp.cpp: line 40/41

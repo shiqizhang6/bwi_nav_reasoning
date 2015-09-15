@@ -47,6 +47,8 @@ public:
     int col_num; 
     int row_num; 
 
+    int walker_row, walker_col; 
+
     std::map<std::vector<int>, State> states_map; 
 
     void walkerCallback(const bwi_msgs::AvailableRobotWithLocationArray::ConstPtr &);

@@ -125,6 +125,8 @@ void DomainParser::walkerCallback(const bwi_msgs::AvailableRobotWithLocationArra
             std::cerr << "error in locate walkers" << std::endl;
         } else {
             vec_dynamic_obstacles[min_row][min_col] = 1; 
+            walker_row = min_row; 
+            walker_col = min_col; 
             std::cout << "walker row: " << min_row << " col: " << min_col << std::endl; 
         }
     }

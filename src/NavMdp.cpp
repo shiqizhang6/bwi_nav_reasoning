@@ -37,8 +37,8 @@ NavMdp::NavMdp (ros::NodeHandle *nh, std::string static_obs,
     path = ros::package::getPath("bwi_nav_reasoning") + "/maps/"; 
 
     std::cout << "creating domain parser..." << std::endl; 
-    dparser = DomainParser(nh, path + static_obs, path + sunny, 
-        tmp_domain_dir + "facts.plog", path_coord_, "/random_persons_controller/status");
+    // dparser = DomainParser(nh, path + static_obs, path + sunny, tmp_domain_dir + "facts.plog", path_coord_, "/random_persons_controller/status");
+    dparser = DomainParser(nh, path + static_obs, path + sunny, tmp_domain_dir + "facts.plog", path_coord_, "");
     std::cout << "creating domain parser finished" << std::endl; 
 
     // copy plog rules to temporary folder
@@ -59,7 +59,9 @@ void NavMdp::computeTransitionDynamics() {
     int cnt = 0; 
     
     for (int i=0; i<all_states.size(); i++) {
-    
+        
+        if (ros::ok() == false) break; 
+
         if (i*1.0/all_states.size() >= cnt*1.0/100.0) {
             while (i*1.0/all_states.size() > (++cnt)*1.0/100.0) {}
             std::cout << "\rfinished: " << cnt << "\%" << std::endl;

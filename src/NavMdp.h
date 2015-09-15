@@ -14,7 +14,7 @@
 
 #define EPSILON (0.00001)
 
-static float action_cost=-1.0, success_reward=10.0, failure_penalty=-10.0; 
+static float action_cost=-1.0, success_reward=100.0, failure_penalty=-100.0; 
 
 struct TransValue {
     std::vector<State> ns; 
