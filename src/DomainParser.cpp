@@ -39,19 +39,12 @@ DomainParser::DomainParser(ros::NodeHandle *nh, const std::string static_obs,
 
     ynode=YAML::LoadFile(ros::package::getPath("bwi_nav_reasoning") + "/maps/" + file_yaml); 
 
-    for (YAML::const_iterator row_pt = ynode["row_y"].begin();
-            row_pt != ynode["row_y"].end(); row_pt++) {
-
-        for (YAML::const_iterator col_pt = ynode["col_x"].begin();
-                col_pt != ynode["col_x"].end(); col_pt++) {
-            
-            coordinates_2d[row_pt->first.as<int>()][col_pt->first.as<int>()][0] 
-                = row_pt->second.as<float>();
-            coordinates_2d[row_pt->first.as<int>()][col_pt->first.as<int>()][1] 
-                = col_pt->second.as<float>();
+    for (int i=0; i<ynode.size(); i++) {
+        for (int j=0; j<ynode[i].size(); j++) {
+            coordinates_2d[i][j][0] = ynode[i][j][1].as<float>(); 
+            coordinates_2d[i][j][1] = ynode[i][j][0].as<float>(); 
         }
     }
-
 
     updateDynamicObstacles(); 
     std::cout << "updated dynamic obstacles" << std::endl;

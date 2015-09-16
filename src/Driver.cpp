@@ -34,21 +34,14 @@ void Driver::callbackUpdatePosition(const geometry_msgs::PoseWithCovarianceStamp
     // std::cout << "float x: " << x << std::endl; 
     // std::cout << "float y: " << y << std::endl; 
 
-    for (YAML::const_iterator row_pt = ynode["row_y"].begin(); 
-            row_pt != ynode["row_y"].end(); row_pt++) {
-
-        for (YAML::const_iterator col_pt = ynode["col_x"].begin(); 
-                col_pt != ynode["col_x"].end(); col_pt++) {
-
-            float dis = pow(pow(x - col_pt->second.as<float>(), 2.0) + 
-                            pow(y - row_pt->second.as<float>(), 2.0), 0.5);
-            // std::cout << "row_pt: " << row_pt->second.as<float>() 
-            //     << " col_pt: " << col_pt->second.as<float>() << std::endl; 
-            // std::cout << "dis: " << dis << std::endl; 
-
-            if (dis < min_distance) {
-                min_row = row_pt->first.as<int>();
-                min_col = col_pt->first.as<int>(); 
+    for (int i=0; i<ynode.size(); i++) {
+        for (int j=0; j<ynode[i].size(); j++) {
+            float dis = pow(pow(x - ynode[i][j][0].as<float>(), 2.0) + 
+                            pow(y - ynode[i][j][1].as<float>(), 2.0), 0.5);
+        
+            if (dis <min_distance) {
+                min_row = i;
+                min_col = j; 
                 min_distance = dis; 
             }
         }
