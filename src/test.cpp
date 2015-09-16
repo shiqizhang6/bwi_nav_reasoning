@@ -15,8 +15,6 @@
 
 int main(int argc, char **argv) {
 
-    bool icorpp = true;
-
     ros::init(argc, argv, "bwi_nav_reasoning_node"); 
     ros::NodeHandle *nh = new ros::NodeHandle(); 
 
@@ -32,16 +30,17 @@ int main(int argc, char **argv) {
     boost::shared_ptr<VIEstimator<State, Action> > estimator(new VITabularEstimator<State, Action>); 
 
     Driver *driver = new Driver(nh, path_coord); 
-    srand(time(NULL)); 
-    std::ofstream logfile; 
 
     term.row = 3; term.col = 5;
+    term.row = 1; term.col = 3;
 
     std::cout << "creating nav model..." << std::endl; 
     boost::shared_ptr<NavMdp> model(new NavMdp(nh, path_static, 
                                                path_sunny, "tmp/rl_domain/facts.plog", 
                                                term.row, term.col, path_coord)); 
     model->dparser.updateDynamicObstacles(); 
+    model->computeTransitionDynamics(); 
+
     ValueIteration<State, Action> vi(model, estimator);
     std::cout << "Computing policy..." << std::endl;
     vi.computePolicy(); 
