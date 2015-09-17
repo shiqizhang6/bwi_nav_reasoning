@@ -34,14 +34,13 @@ void Driver::callbackUpdatePosition(const geometry_msgs::PoseWithCovarianceStamp
     // std::cout << "float x: " << x << std::endl; 
     // std::cout << "float y: " << y << std::endl; 
 
-    for (int i=0; i<ynode.size(); i++) {
-        for (int j=0; j<ynode[i].size(); j++) {
-            float dis = pow(pow(x - ynode[i][j][0].as<float>(), 2.0) + 
-                            pow(y - ynode[i][j][1].as<float>(), 2.0), 0.5);
-        
+    for (YAML::const_iterator row_pt = ynode.begin(); row_pt != ynode.end(); row_pt++) {
+        for (YAML::const_iterator col_pt = row_pt->second.begin(); col_pt != row_pt->second.end(); col_pt++) {
+            float dis = pow(pow(x - col_pt->second[0].as<double>(), 2.0) + 
+                            pow(y - col_pt->second[1].as<double>(), 2.0), 0.5);
             if (dis <min_distance) {
-                min_row = i;
-                min_col = j; 
+                min_row = row_pt->first.as<int>();
+                min_col = col_pt->first.as<int>(); 
                 min_distance = dis; 
             }
         }
@@ -71,8 +70,12 @@ bool Driver::moveToGoalState(const State &state) {
     geometry_msgs::PoseStamped msg_goal; 
     
     msg_goal.header.frame_id = "level_mux/map"; 
-    msg_goal.pose.position.x = goal_x = ynode["col_x"][state.col].as<float>();
-    msg_goal.pose.position.y = goal_y = ynode["row_y"][state.row].as<float>();
+
+    // msg_goal.pose.position.x = goal_x = ynode["col_x"][state.col].as<float>();
+    // msg_goal.pose.position.y = goal_y = ynode["row_y"][state.row].as<float>();
+    msg_goal.pose.position.x = goal_x = ynode[state.row][state.col][0].as<float>();
+    msg_goal.pose.position.y = goal_y = ynode[state.row][state.col][1].as<float>();
+
     msg_goal.pose.orientation.z = 0.0;
     msg_goal.pose.orientation.w = 1.0;
         

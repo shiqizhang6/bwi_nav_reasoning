@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
     Driver *driver = new Driver(nh, path_coord); 
 
-    term.row = 3; term.col = 5;
+    // term.row = 2; term.col = 0;
     term.row = 1; term.col = 3;
 
     std::cout << "creating nav model..." << std::endl; 
