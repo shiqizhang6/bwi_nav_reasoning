@@ -44,20 +44,26 @@ int main(int argc, char **argv) {
     // std::cout << "Computing policy..." << std::endl;
     // vi.computePolicy(); 
 
+    int last_rnum = -1, rnum; 
     for (int i=0; i<NUM_OF_TRIALS; i++) {
 
 
         if (ros::ok() == false) break;
-    
-        int rnum = rand() % 4; 
-        if (rnum == 0) {
-            term.row = 0; term.col = 3;
-        } else if (rnum == 1) {
-            term.row = 2; term.col = 0;
-        } else if (rnum == 2) {
-            term.row = 4; term.col = 2;
-        } else {
-            term.row = 4; term.col = 4;
+        while (1) {
+            rnum = rand() % 4; 
+
+            if (rnum == last_rnum) continue;
+            else last_rnum = rnum; 
+
+            if (rnum == 0) {
+                term.row = 0; term.col = 3;
+            } else if (rnum == 1) {
+                term.row = 2; term.col = 0;
+            } else if (rnum == 2) {
+                term.row = 4; term.col = 2;
+            } else {
+                term.row = 4; term.col = 4;
+            }
         }
 
         logfile.open("/home/shiqi/Dropbox/Shared_space/20150911_shiqi/log.txt", std::ios::app); 
