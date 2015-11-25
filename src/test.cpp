@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
             rnum = rand() % 4; 
 
             if (rnum == last_rnum) continue;
-            else last_rnum = rnum; 
+            else {last_rnum = rnum; break;}
 
             if (rnum == 0) {
                 term.row = 0; term.col = 3;
