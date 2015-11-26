@@ -47,7 +47,6 @@ int main(int argc, char **argv) {
     int last_rnum = -1, rnum; 
     for (int i=0; i<NUM_OF_TRIALS; i++) {
 
-
         if (ros::ok() == false) break;
         while (1) {
             rnum = rand() % 4; 

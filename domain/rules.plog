@@ -42,15 +42,19 @@ next_s:state.
 
 [rnl] pr(next_s=S2 | sunny(S2)=false, human(S1), curr_a=up,    curr_s=S2, belowof(S2,S1)) = 9/10. 
 [rnl] pr(next_s=S1 | sunny(S2)=false, human(S1), curr_a=up,    curr_s=S2, belowof(S2,S1)) = 1/10. 
+% [rnl] pr(next_s=S3 | terminal(S3), sunny(S2)=false, human(S1), curr_a=up, curr_s=S2, belowof(S2,S1)) = 1/10. 
 
 [rnl] pr(next_s=S2 | sunny(S2)=false, human(S1), curr_a=down,  curr_s=S2, belowof(S1,S2)) = 9/10. 
 [rnl] pr(next_s=S1 | sunny(S2)=false, human(S1), curr_a=down,  curr_s=S2, belowof(S1,S2)) = 1/10. 
+% [rnl] pr(next_s=S3 | terminal(S3), sunny(S2)=false, human(S1), curr_a=down, curr_s=S2, belowof(S1,S2)) = 1/10. 
 
 [rnl] pr(next_s=S2 | sunny(S2)=false, human(S1), curr_a=left,  curr_s=S2, leftof(S1,S2)) = 9/10. 
 [rnl] pr(next_s=S1 | sunny(S2)=false, human(S1), curr_a=left,  curr_s=S2, leftof(S1,S2)) = 1/10. 
+% [rnl] pr(next_s=S3 | terminal(S3), sunny(S2)=false, human(S1), curr_a=left, curr_s=S2, leftof(S1,S2)) = 1/10. 
 
 [rnl] pr(next_s=S2 | sunny(S2)=false, human(S1), curr_a=right, curr_s=S2, leftof(S2,S1)) = 9/10. 
 [rnl] pr(next_s=S1 | sunny(S2)=false, human(S1), curr_a=right, curr_s=S2, leftof(S2,S1)) = 1/10. 
+% [rnl] pr(next_s=S3 | terminal(S3), sunny(S2)=false, human(S1), curr_a=right, curr_s=S2, leftof(S2,S1)) = 1/10. 
 
 [rnl] pr(next_s=S1 | terminal(S1), sunny(S2), curr_s=S2) = 9/10. 
 [rnl] pr(next_s=S1 | terminal(S1), sunny(S2)=false, curr_s=S2) = 1/10. 
