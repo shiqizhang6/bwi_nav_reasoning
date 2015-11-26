@@ -52,18 +52,22 @@ int main(int argc, char **argv) {
         while (1) {
             rnum = rand() % 4; 
 
-            if (rnum == last_rnum) continue;
-            else {last_rnum = rnum; break;}
-
-            if (rnum == 0) {
-                term.row = 0; term.col = 3;
-            } else if (rnum == 1) {
-                term.row = 2; term.col = 0;
-            } else if (rnum == 2) {
-                term.row = 4; term.col = 2;
-            } else {
-                term.row = 4; term.col = 4;
+            if (rnum == last_rnum) 
+                continue;
+            else {
+                last_rnum = rnum; 
+                break;
             }
+        }
+
+        if (rnum == 0) {
+            term.row = 0; term.col = 3;
+        } else if (rnum == 1) {
+            term.row = 2; term.col = 0;
+        } else if (rnum == 2) {
+            term.row = 4; term.col = 2;
+        } else {
+            term.row = 4; term.col = 4;
         }
 
         logfile.open("/home/shiqi/Dropbox/Shared_space/20150911_shiqi/log.txt", std::ios::app); 
