@@ -32,6 +32,7 @@ catkin_package(
 
 include_directories(
     src
+    ${catkin_INCLUDE_DIRS}
     ${bwi_rl_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
 )
