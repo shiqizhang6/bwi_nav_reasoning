@@ -14,14 +14,17 @@ NavMdp::NavMdp (ros::NodeHandle *nh, std::string static_obs,
     
     std::string zoidberg_plog("/home/shiqi/software/p-log/plog/install/plog");
     std::string sony_laptop_plog("/home/szhang/software/p-log/plog/src/plog");
-    std::string segbot_plog("/home/users/szhang/software/p-log/plog/src/plog"); 
+    std::string segbot_v2_plog("/home/bwi/Downloads/plog/install/plog"); 
+    std::string segbot_v3_plog("/home/users/szhang/software/plog/plog/src/plog"); 
 
-    if (boost::filesystem::exists(zoidberg_plog))
+    if (boost::filesystem::exists(zoidberg_plog)) 
         path_to_plog = "cd /tmp && " + zoidberg_plog + " -t "; 
     else if (boost::filesystem::exists(sony_laptop_plog))
         path_to_plog = "cd /tmp && " + sony_laptop_plog + " -t "; 
-    else if (boost::filesystem::exists(segbot_plog))
-        path_to_plog = "cd /tmp && " + segbot_plog + " -t "; 
+    else if (boost::filesystem::exists(segbot_v2_plog))
+        path_to_plog = "cd /tmp && " + segbot_v2_plog + " -t "; 
+    else if (boost::filesystem::exists(segbot_v3_plog))
+        path_to_plog = "cd /tmp && " + segbot_v3_plog + " -t "; 
     else
         std::cout << "cannot find plog installed" << std::endl; 
 
@@ -37,8 +40,12 @@ NavMdp::NavMdp (ros::NodeHandle *nh, std::string static_obs,
     path = ros::package::getPath("bwi_nav_reasoning") + "/maps/"; 
 
     std::cout << "creating domain parser..." << std::endl; 
-    // dparser = DomainParser(nh, path + static_obs, path + sunny, tmp_domain_dir + "facts.plog", path_coord_, "/random_persons_controller/status");
-    dparser = DomainParser(nh, path + static_obs, path + sunny, tmp_domain_dir + "facts.plog", path_coord_, "");
+
+
+    dparser = DomainParser(nh, path + static_obs, path + sunny, tmp_domain_dir + "facts.plog", path_coord_, "/random_persons_controller/status");
+    // dparser = DomainParser(nh, path + static_obs, path + sunny, tmp_domain_dir + "facts.plog", path_coord_, "");
+
+
     std::cout << "creating domain parser finished" << std::endl; 
 
     // copy plog rules to temporary folder
